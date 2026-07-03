@@ -1,0 +1,796 @@
+{
+  "DS001": {
+    "count": 18,
+    "rows": [
+      {
+        "patient_age": 72,
+        "sex": "F",
+        "hba1c": 58,
+        "bmi": 31.2,
+        "ethnicity": "Black British"
+      },
+      {
+        "patient_age": 81,
+        "sex": "M",
+        "hba1c": 67,
+        "bmi": 28.9,
+        "ethnicity": "Asian British"
+      },
+      {
+        "patient_age": 80,
+        "sex": "F",
+        "hba1c": 49,
+        "bmi": 35.3,
+        "ethnicity": "Mixed"
+      },
+      {
+        "patient_age": 55,
+        "sex": "F",
+        "hba1c": 56,
+        "bmi": 35.3,
+        "ethnicity": "White Other"
+      },
+      {
+        "patient_age": 83,
+        "sex": "F",
+        "hba1c": 85,
+        "bmi": 29.6,
+        "ethnicity": "White British"
+      },
+      {
+        "patient_age": 41,
+        "sex": "F",
+        "hba1c": 61,
+        "bmi": 26.2,
+        "ethnicity": "White British"
+      },
+      {
+        "patient_age": 78,
+        "sex": "F",
+        "hba1c": 83,
+        "bmi": 25.6,
+        "ethnicity": "Other"
+      },
+      {
+        "patient_age": 81,
+        "sex": "M",
+        "hba1c": 62,
+        "bmi": 30.1,
+        "ethnicity": "White British"
+      },
+      {
+        "patient_age": 57,
+        "sex": "F",
+        "hba1c": 58,
+        "bmi": 34.6,
+        "ethnicity": "Black British"
+      },
+      {
+        "patient_age": 61,
+        "sex": "M",
+        "hba1c": 57,
+        "bmi": 25.9,
+        "ethnicity": "Other"
+      },
+      {
+        "patient_age": 88,
+        "sex": "M",
+        "hba1c": 54,
+        "bmi": 23.7,
+        "ethnicity": "White British"
+      },
+      {
+        "patient_age": 46,
+        "sex": "M",
+        "hba1c": 70,
+        "bmi": 32.9,
+        "ethnicity": "Other"
+      },
+      {
+        "patient_age": 42,
+        "sex": "M",
+        "hba1c": 82,
+        "bmi": 24.2,
+        "ethnicity": "Asian British"
+      },
+      {
+        "patient_age": 64,
+        "sex": "F",
+        "hba1c": 83,
+        "bmi": 27.3,
+        "ethnicity": "White British"
+      },
+      {
+        "patient_age": 80,
+        "sex": "M",
+        "hba1c": 84,
+        "bmi": 25.5,
+        "ethnicity": "White British"
+      },
+      {
+        "patient_age": 44,
+        "sex": "F",
+        "hba1c": 90,
+        "bmi": 26.1,
+        "ethnicity": "Mixed"
+      },
+      {
+        "patient_age": 58,
+        "sex": "F",
+        "hba1c": 62,
+        "bmi": 37.6,
+        "ethnicity": "Mixed"
+      },
+      {
+        "patient_age": 64,
+        "sex": "M",
+        "hba1c": 77,
+        "bmi": 33.4,
+        "ethnicity": "White British"
+      }
+    ]
+  },
+  "DS002": {
+    "count": 2,
+    "rows": [
+      {
+        "age": 66,
+        "ejection_fraction": 34,
+        "medication": "ACE inhibitor",
+        "outcome": "stable"
+      },
+      {
+        "age": 74,
+        "ejection_fraction": 28,
+        "medication": "beta-blocker",
+        "outcome": "readmitted"
+      }
+    ]
+  },
+  "DS003": {
+    "count": 7,
+    "rows": [
+      {
+        "age": 70,
+        "fev1": 1.4,
+        "smoking_status": "current",
+        "exacerbations_per_year": 3
+      },
+      {
+        "age": 63,
+        "fev1": 1.8,
+        "smoking_status": "ex-smoker",
+        "exacerbations_per_year": 1
+      },
+      {
+        "age": 68,
+        "fev1": 1.2,
+        "smoking_status": "ex-smoker",
+        "exacerbations_per_year": 1
+      },
+      {
+        "age": 87,
+        "fev1": 1.3,
+        "smoking_status": "never",
+        "exacerbations_per_year": 5
+      },
+      {
+        "age": 49,
+        "fev1": 1.9,
+        "smoking_status": "current",
+        "exacerbations_per_year": 4
+      },
+      {
+        "age": 60,
+        "fev1": 1.2,
+        "smoking_status": "ex-smoker",
+        "exacerbations_per_year": 2
+      },
+      {
+        "age": 85,
+        "fev1": 2.0,
+        "smoking_status": "current",
+        "exacerbations_per_year": 5
+      }
+    ]
+  },
+  "DS004": {
+    "count": 35,
+    "rows": [
+      {
+        "tumour_type": "breast",
+        "stage": "II",
+        "treatment": "chemotherapy",
+        "survival_months": 48
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "III",
+        "treatment": "radiotherapy",
+        "survival_months": 22
+      },
+      {
+        "tumour_type": "prostate",
+        "stage": "I",
+        "treatment": "radiotherapy",
+        "survival_months": 8
+      },
+      {
+        "tumour_type": "prostate",
+        "stage": "IV",
+        "treatment": "surgery",
+        "survival_months": 12
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "III",
+        "treatment": "radiotherapy",
+        "survival_months": 87
+      },
+      {
+        "tumour_type": "colorectal",
+        "stage": "IV",
+        "treatment": "immunotherapy",
+        "survival_months": 22
+      },
+      {
+        "tumour_type": "prostate",
+        "stage": "II",
+        "treatment": "radiotherapy",
+        "survival_months": 75
+      },
+      {
+        "tumour_type": "bladder",
+        "stage": "III",
+        "treatment": "immunotherapy",
+        "survival_months": 78
+      },
+      {
+        "tumour_type": "colorectal",
+        "stage": "III",
+        "treatment": "radiotherapy",
+        "survival_months": 21
+      },
+      {
+        "tumour_type": "bladder",
+        "stage": "IV",
+        "treatment": "chemotherapy",
+        "survival_months": 10
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "II",
+        "treatment": "radiotherapy",
+        "survival_months": 91
+      },
+      {
+        "tumour_type": "colorectal",
+        "stage": "I",
+        "treatment": "immunotherapy",
+        "survival_months": 52
+      },
+      {
+        "tumour_type": "bladder",
+        "stage": "IV",
+        "treatment": "surgery",
+        "survival_months": 74
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "I",
+        "treatment": "surgery",
+        "survival_months": 86
+      },
+      {
+        "tumour_type": "prostate",
+        "stage": "I",
+        "treatment": "surgery",
+        "survival_months": 59
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "IV",
+        "treatment": "chemotherapy",
+        "survival_months": 96
+      },
+      {
+        "tumour_type": "prostate",
+        "stage": "II",
+        "treatment": "chemotherapy",
+        "survival_months": 84
+      },
+      {
+        "tumour_type": "prostate",
+        "stage": "II",
+        "treatment": "radiotherapy",
+        "survival_months": 51
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "I",
+        "treatment": "surgery",
+        "survival_months": 66
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "I",
+        "treatment": "surgery",
+        "survival_months": 43
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "I",
+        "treatment": "radiotherapy",
+        "survival_months": 76
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "I",
+        "treatment": "immunotherapy",
+        "survival_months": 12
+      },
+      {
+        "tumour_type": "bladder",
+        "stage": "II",
+        "treatment": "radiotherapy",
+        "survival_months": 88
+      },
+      {
+        "tumour_type": "colorectal",
+        "stage": "II",
+        "treatment": "surgery",
+        "survival_months": 71
+      },
+      {
+        "tumour_type": "bladder",
+        "stage": "IV",
+        "treatment": "radiotherapy",
+        "survival_months": 73
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "III",
+        "treatment": "immunotherapy",
+        "survival_months": 89
+      },
+      {
+        "tumour_type": "prostate",
+        "stage": "IV",
+        "treatment": "immunotherapy",
+        "survival_months": 19
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "II",
+        "treatment": "chemotherapy",
+        "survival_months": 47
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "II",
+        "treatment": "radiotherapy",
+        "survival_months": 4
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "I",
+        "treatment": "radiotherapy",
+        "survival_months": 12
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "III",
+        "treatment": "chemotherapy",
+        "survival_months": 69
+      },
+      {
+        "tumour_type": "lung",
+        "stage": "III",
+        "treatment": "immunotherapy",
+        "survival_months": 31
+      },
+      {
+        "tumour_type": "bladder",
+        "stage": "II",
+        "treatment": "immunotherapy",
+        "survival_months": 35
+      },
+      {
+        "tumour_type": "colorectal",
+        "stage": "IV",
+        "treatment": "radiotherapy",
+        "survival_months": 16
+      },
+      {
+        "tumour_type": "breast",
+        "stage": "IV",
+        "treatment": "surgery",
+        "survival_months": 58
+      }
+    ]
+  },
+  "DS005": {
+    "count": 4,
+    "rows": [
+      {
+        "age": 58,
+        "stroke_type": "ischaemic",
+        "nihss_score": 6,
+        "discharge_destination": "home"
+      },
+      {
+        "age": 77,
+        "stroke_type": "haemorrhagic",
+        "nihss_score": 14,
+        "discharge_destination": "rehab"
+      }
+    ]
+  },
+  "DS006": {
+    "count": 18,
+    "rows": [
+      {
+        "arrival_time": "08:12",
+        "triage_category": 2,
+        "wait_minutes": 45,
+        "disposition": "admitted"
+      },
+      {
+        "arrival_time": "14:03",
+        "triage_category": 3,
+        "wait_minutes": 90,
+        "disposition": "discharged"
+      },
+      {
+        "arrival_time": "13:29",
+        "triage_category": 1,
+        "wait_minutes": 177,
+        "disposition": "admitted"
+      },
+      {
+        "arrival_time": "01:25",
+        "triage_category": 3,
+        "wait_minutes": 209,
+        "disposition": "admitted"
+      },
+      {
+        "arrival_time": "07:12",
+        "triage_category": 2,
+        "wait_minutes": 142,
+        "disposition": "left_without_being_seen"
+      },
+      {
+        "arrival_time": "04:27",
+        "triage_category": 2,
+        "wait_minutes": 76,
+        "disposition": "left_without_being_seen"
+      },
+      {
+        "arrival_time": "07:55",
+        "triage_category": 1,
+        "wait_minutes": 118,
+        "disposition": "admitted"
+      },
+      {
+        "arrival_time": "01:41",
+        "triage_category": 5,
+        "wait_minutes": 219,
+        "disposition": "admitted"
+      },
+      {
+        "arrival_time": "02:59",
+        "triage_category": 2,
+        "wait_minutes": 47,
+        "disposition": "left_without_being_seen"
+      },
+      {
+        "arrival_time": "15:30",
+        "triage_category": 2,
+        "wait_minutes": 226,
+        "disposition": "left_without_being_seen"
+      },
+      {
+        "arrival_time": "01:10",
+        "triage_category": 4,
+        "wait_minutes": 5,
+        "disposition": "left_without_being_seen"
+      },
+      {
+        "arrival_time": "08:59",
+        "triage_category": 4,
+        "wait_minutes": 78,
+        "disposition": "left_without_being_seen"
+      },
+      {
+        "arrival_time": "22:46",
+        "triage_category": 5,
+        "wait_minutes": 174,
+        "disposition": "left_without_being_seen"
+      },
+      {
+        "arrival_time": "04:12",
+        "triage_category": 3,
+        "wait_minutes": 60,
+        "disposition": "admitted"
+      },
+      {
+        "arrival_time": "18:47",
+        "triage_category": 5,
+        "wait_minutes": 20,
+        "disposition": "referred"
+      },
+      {
+        "arrival_time": "01:03",
+        "triage_category": 5,
+        "wait_minutes": 127,
+        "disposition": "discharged"
+      },
+      {
+        "arrival_time": "01:32",
+        "triage_category": 1,
+        "wait_minutes": 222,
+        "disposition": "discharged"
+      },
+      {
+        "arrival_time": "02:38",
+        "triage_category": 1,
+        "wait_minutes": 177,
+        "disposition": "discharged"
+      }
+    ]
+  },
+  "DS007": {
+    "count": 12,
+    "rows": [
+      {
+        "age": 34,
+        "diagnosis_category": "anxiety",
+        "referral_source": "GP",
+        "crisis_flag": false
+      },
+      {
+        "age": 45,
+        "diagnosis_category": "depression",
+        "referral_source": "A&E",
+        "crisis_flag": true
+      },
+      {
+        "age": 41,
+        "diagnosis_category": "anxiety",
+        "referral_source": "A&E",
+        "crisis_flag": true
+      },
+      {
+        "age": 55,
+        "diagnosis_category": "anxiety",
+        "referral_source": "police",
+        "crisis_flag": false
+      },
+      {
+        "age": 75,
+        "diagnosis_category": "psychosis",
+        "referral_source": "A&E",
+        "crisis_flag": false
+      },
+      {
+        "age": 31,
+        "diagnosis_category": "psychosis",
+        "referral_source": "police",
+        "crisis_flag": true
+      },
+      {
+        "age": 58,
+        "diagnosis_category": "psychosis",
+        "referral_source": "police",
+        "crisis_flag": false
+      },
+      {
+        "age": 75,
+        "diagnosis_category": "anxiety",
+        "referral_source": "GP",
+        "crisis_flag": false
+      },
+      {
+        "age": 55,
+        "diagnosis_category": "PTSD",
+        "referral_source": "GP",
+        "crisis_flag": true
+      },
+      {
+        "age": 50,
+        "diagnosis_category": "depression",
+        "referral_source": "self-referral",
+        "crisis_flag": true
+      },
+      {
+        "age": 75,
+        "diagnosis_category": "psychosis",
+        "referral_source": "GP",
+        "crisis_flag": true
+      },
+      {
+        "age": 39,
+        "diagnosis_category": "psychosis",
+        "referral_source": "A&E",
+        "crisis_flag": false
+      }
+    ]
+  },
+  "DS008": {
+    "count": 18,
+    "rows": [
+      {
+        "age": 84,
+        "rockwood_score": 6,
+        "falls_count": 2,
+        "care_setting": "community"
+      },
+      {
+        "age": 91,
+        "rockwood_score": 7,
+        "falls_count": 4,
+        "care_setting": "residential"
+      },
+      {
+        "age": 84,
+        "rockwood_score": 9,
+        "falls_count": 0,
+        "care_setting": "nursing_home"
+      },
+      {
+        "age": 71,
+        "rockwood_score": 3,
+        "falls_count": 4,
+        "care_setting": "community"
+      },
+      {
+        "age": 71,
+        "rockwood_score": 9,
+        "falls_count": 2,
+        "care_setting": "nursing_home"
+      },
+      {
+        "age": 83,
+        "rockwood_score": 4,
+        "falls_count": 5,
+        "care_setting": "residential"
+      },
+      {
+        "age": 81,
+        "rockwood_score": 9,
+        "falls_count": 7,
+        "care_setting": "nursing_home"
+      },
+      {
+        "age": 68,
+        "rockwood_score": 2,
+        "falls_count": 6,
+        "care_setting": "nursing_home"
+      },
+      {
+        "age": 67,
+        "rockwood_score": 1,
+        "falls_count": 5,
+        "care_setting": "residential"
+      },
+      {
+        "age": 81,
+        "rockwood_score": 3,
+        "falls_count": 7,
+        "care_setting": "hospital"
+      },
+      {
+        "age": 65,
+        "rockwood_score": 2,
+        "falls_count": 1,
+        "care_setting": "residential"
+      },
+      {
+        "age": 67,
+        "rockwood_score": 6,
+        "falls_count": 8,
+        "care_setting": "residential"
+      },
+      {
+        "age": 92,
+        "rockwood_score": 3,
+        "falls_count": 0,
+        "care_setting": "nursing_home"
+      },
+      {
+        "age": 88,
+        "rockwood_score": 1,
+        "falls_count": 5,
+        "care_setting": "residential"
+      },
+      {
+        "age": 80,
+        "rockwood_score": 2,
+        "falls_count": 5,
+        "care_setting": "hospital"
+      },
+      {
+        "age": 74,
+        "rockwood_score": 4,
+        "falls_count": 2,
+        "care_setting": "residential"
+      },
+      {
+        "age": 91,
+        "rockwood_score": 1,
+        "falls_count": 2,
+        "care_setting": "nursing_home"
+      },
+      {
+        "age": 91,
+        "rockwood_score": 4,
+        "falls_count": 4,
+        "care_setting": "residential"
+      }
+    ]
+  },
+  "DS009": {
+    "count": 7,
+    "rows": [
+      {
+        "maternal_age": 29,
+        "gestation_weeks": 39,
+        "delivery_type": "vaginal",
+        "birth_weight": 3.4
+      },
+      {
+        "maternal_age": 34,
+        "gestation_weeks": 37,
+        "delivery_type": "caesarean",
+        "birth_weight": 2.9
+      },
+      {
+        "maternal_age": 43,
+        "gestation_weeks": 33,
+        "delivery_type": "caesarean",
+        "birth_weight": 4.2
+      },
+      {
+        "maternal_age": 33,
+        "gestation_weeks": 35,
+        "delivery_type": "vaginal",
+        "birth_weight": 4.0
+      },
+      {
+        "maternal_age": 32,
+        "gestation_weeks": 37,
+        "delivery_type": "caesarean",
+        "birth_weight": 4.0
+      },
+      {
+        "maternal_age": 25,
+        "gestation_weeks": 35,
+        "delivery_type": "vaginal",
+        "birth_weight": 3.6
+      },
+      {
+        "maternal_age": 30,
+        "gestation_weeks": 37,
+        "delivery_type": "caesarean",
+        "birth_weight": 4.1
+      }
+    ]
+  },
+  "DS010": {
+    "count": 12,
+    "rows": [
+      {
+        "age": 61,
+        "lactate": 3.8,
+        "sofa_score": 7,
+        "time_to_antibiotics_mins": 42
+      },
+      {
+        "age": 72,
+        "lactate": 5.1,
+        "sofa_score": 10,
+        "time_to_antibiotics_mins": 68
+      }
+    ]
+  }
+}

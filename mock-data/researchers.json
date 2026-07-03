@@ -1,0 +1,136 @@
+[
+  {
+    "username": "alice",
+    "display_name": "Alice Nguyen",
+    "role": "Researcher",
+    "projects": [
+      "PRJ007",
+      "PRJ018"
+    ]
+  },
+  {
+    "username": "bob",
+    "display_name": "Bob Okafor",
+    "role": "Data Scientist",
+    "projects": [
+      "PRJ014",
+      "PRJ018"
+    ]
+  },
+  {
+    "username": "charlie",
+    "display_name": "Charlie Ramirez",
+    "role": "Researcher",
+    "projects": [
+      "PRJ015",
+      "PRJ019"
+    ]
+  },
+  {
+    "username": "diana",
+    "display_name": "Diana Fitzgerald",
+    "role": "Clinical Research Fellow",
+    "projects": [
+      "PRJ001",
+      "PRJ006"
+    ]
+  },
+  {
+    "username": "ethan",
+    "display_name": "Ethan Walsh",
+    "role": "Data Scientist",
+    "projects": [
+      "PRJ011",
+      "PRJ014"
+    ]
+  },
+  {
+    "username": "fiona",
+    "display_name": "Fiona Marsh",
+    "role": "Clinical Research Fellow",
+    "projects": [
+      "PRJ005",
+      "PRJ007"
+    ]
+  },
+  {
+    "username": "george",
+    "display_name": "George Palmer",
+    "role": "Clinical Research Fellow",
+    "projects": [
+      "PRJ003",
+      "PRJ004"
+    ]
+  },
+  {
+    "username": "hannah",
+    "display_name": "Hannah Price",
+    "role": "Clinical Research Fellow",
+    "projects": [
+      "PRJ004",
+      "PRJ012"
+    ]
+  },
+  {
+    "username": "ian",
+    "display_name": "Ian Sutherland",
+    "role": "Clinical Research Fellow",
+    "projects": [
+      "PRJ009",
+      "PRJ020"
+    ]
+  },
+  {
+    "username": "julia",
+    "display_name": "Julia Dawson",
+    "role": "Researcher",
+    "projects": [
+      "PRJ015",
+      "PRJ018"
+    ]
+  },
+  {
+    "username": "kevin",
+    "display_name": "Kevin Osei",
+    "role": "Researcher",
+    "projects": [
+      "PRJ003",
+      "PRJ013"
+    ]
+  },
+  {
+    "username": "laura",
+    "display_name": "Laura Whitfield",
+    "role": "Data Scientist",
+    "projects": [
+      "PRJ010",
+      "PRJ020"
+    ]
+  },
+  {
+    "username": "mike",
+    "display_name": "Mike Sinclair",
+    "role": "Clinical Research Fellow",
+    "projects": [
+      "PRJ007",
+      "PRJ019"
+    ]
+  },
+  {
+    "username": "nina",
+    "display_name": "Nina Kapoor",
+    "role": "Data Scientist",
+    "projects": [
+      "PRJ002",
+      "PRJ003"
+    ]
+  },
+  {
+    "username": "admin",
+    "display_name": "Platform Admin",
+    "role": "Platform Administrator",
+    "projects": [
+      "*"
+    ]
+  }
+]

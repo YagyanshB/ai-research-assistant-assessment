@@ -1,0 +1,263 @@
+[
+  {
+    "id": "DS001",
+    "name": "Primary Care Diabetes Cohort",
+    "description": "Synthetic GP records for diabetes patients.",
+    "records": 45405,
+    "restricted": false,
+    "fields": [
+      "patient_age",
+      "sex",
+      "hba1c",
+      "bmi",
+      "ethnicity"
+    ]
+  },
+  {
+    "id": "DS002",
+    "name": "Heart Failure Registry",
+    "description": "Synthetic cardiology dataset tracking heart failure outcomes.",
+    "records": 10796,
+    "restricted": false,
+    "fields": [
+      "age",
+      "ejection_fraction",
+      "medication",
+      "outcome"
+    ]
+  },
+  {
+    "id": "DS003",
+    "name": "COPD Clinic Dataset",
+    "description": "Synthetic respiratory clinic encounters for COPD patients.",
+    "records": 5139,
+    "restricted": false,
+    "fields": [
+      "age",
+      "fev1",
+      "smoking_status",
+      "exacerbations_per_year"
+    ]
+  },
+  {
+    "id": "DS004",
+    "name": "Cancer Registry",
+    "description": "Synthetic oncology registry.",
+    "records": 21524,
+    "restricted": false,
+    "fields": [
+      "tumour_type",
+      "stage",
+      "treatment",
+      "survival_months"
+    ]
+  },
+  {
+    "id": "DS005",
+    "name": "Stroke Recovery Registry",
+    "description": "Synthetic stroke rehabilitation and recovery dataset.",
+    "records": 19549,
+    "restricted": true,
+    "fields": [
+      "age",
+      "stroke_type",
+      "nihss_score",
+      "discharge_destination"
+    ]
+  },
+  {
+    "id": "DS006",
+    "name": "Emergency Demand Dataset",
+    "description": "Synthetic A&E attendance and triage dataset.",
+    "records": 18128,
+    "restricted": false,
+    "fields": [
+      "arrival_time",
+      "triage_category",
+      "wait_minutes",
+      "disposition"
+    ]
+  },
+  {
+    "id": "DS007",
+    "name": "Mental Health Referrals Dataset",
+    "description": "Synthetic mental health referral and crisis contact dataset.",
+    "records": 12644,
+    "restricted": false,
+    "fields": [
+      "age",
+      "diagnosis_category",
+      "referral_source",
+      "crisis_flag"
+    ]
+  },
+  {
+    "id": "DS008",
+    "name": "Frailty Assessment Dataset",
+    "description": "Synthetic geriatric frailty assessment dataset.",
+    "records": 10217,
+    "restricted": false,
+    "fields": [
+      "age",
+      "rockwood_score",
+      "falls_count",
+      "care_setting"
+    ]
+  },
+  {
+    "id": "DS009",
+    "name": "Maternity Dataset",
+    "description": "Synthetic maternity episode dataset.",
+    "records": 47848,
+    "restricted": false,
+    "fields": [
+      "maternal_age",
+      "gestation_weeks",
+      "delivery_type",
+      "birth_weight"
+    ]
+  },
+  {
+    "id": "DS010",
+    "name": "Sepsis Registry",
+    "description": "Synthetic sepsis presentation and treatment dataset.",
+    "records": 39241,
+    "restricted": true,
+    "fields": [
+      "age",
+      "lactate",
+      "sofa_score",
+      "time_to_antibiotics_mins"
+    ]
+  },
+  {
+    "id": "DS011",
+    "name": "Kidney Disease Registry",
+    "description": "Synthetic renal function monitoring dataset.",
+    "records": 9197,
+    "restricted": false,
+    "fields": [
+      "age",
+      "egfr",
+      "creatinine",
+      "dialysis_status"
+    ]
+  },
+  {
+    "id": "DS012",
+    "name": "Population Health Dataset",
+    "description": "Synthetic population-level health indicators dataset.",
+    "records": 42198,
+    "restricted": false,
+    "fields": [
+      "imd_decile",
+      "age_band",
+      "region",
+      "life_expectancy"
+    ]
+  },
+  {
+    "id": "DS013",
+    "name": "Waiting Lists Dataset",
+    "description": "Synthetic elective care waiting list dataset.",
+    "records": 31151,
+    "restricted": false,
+    "fields": [
+      "specialty",
+      "wait_weeks",
+      "referral_priority",
+      "breach_flag"
+    ]
+  },
+  {
+    "id": "DS014",
+    "name": "Vaccination Dataset",
+    "description": "Synthetic vaccination uptake and coverage dataset.",
+    "records": 5582,
+    "restricted": false,
+    "fields": [
+      "age",
+      "vaccine_type",
+      "dose_number",
+      "uptake_status"
+    ]
+  },
+  {
+    "id": "DS015",
+    "name": "Health Inequalities Dataset",
+    "description": "Synthetic dataset linking deprivation to health outcomes.",
+    "records": 5452,
+    "restricted": true,
+    "fields": [
+      "imd_decile",
+      "ethnicity",
+      "region",
+      "health_outcome_score"
+    ]
+  },
+  {
+    "id": "DS016",
+    "name": "Long COVID Dataset",
+    "description": "Synthetic long COVID symptom and recovery dataset.",
+    "records": 9640,
+    "restricted": false,
+    "fields": [
+      "age",
+      "symptom_duration_weeks",
+      "fatigue_score",
+      "return_to_work"
+    ]
+  },
+  {
+    "id": "DS017",
+    "name": "Asthma Clinic Dataset",
+    "description": "Synthetic asthma clinic encounter dataset.",
+    "records": 17828,
+    "restricted": false,
+    "fields": [
+      "age",
+      "fev1_percent_predicted",
+      "exacerbations",
+      "inhaler_adherence"
+    ]
+  },
+  {
+    "id": "DS018",
+    "name": "Medication Safety Dataset",
+    "description": "Synthetic medication incident reporting dataset.",
+    "records": 18747,
+    "restricted": false,
+    "fields": [
+      "drug_class",
+      "incident_type",
+      "severity",
+      "age"
+    ]
+  },
+  {
+    "id": "DS019",
+    "name": "ICU Outcomes Registry",
+    "description": "Synthetic intensive care admission and outcome dataset.",
+    "records": 36618,
+    "restricted": false,
+    "fields": [
+      "age",
+      "apache_ii_score",
+      "length_of_stay",
+      "mortality"
+    ]
+  },
+  {
+    "id": "DS020",
+    "name": "Remote Monitoring Dataset",
+    "description": "Synthetic remote monitoring device adherence dataset.",
+    "records": 42953,
+    "restricted": true,
+    "fields": [
+      "age",
+      "device_type",
+      "adherence_percent",
+      "alert_count"
+    ]
+  }
+]

@@ -1,0 +1,202 @@
+[
+  {
+    "id": "PRJ001",
+    "title": "Early Detection of Type 2 Diabetes",
+    "status": "Active",
+    "principal_investigator": "Dr Sarah Williams",
+    "organisation": "Endocrinology",
+    "datasets": [
+      "DS001"
+    ]
+  },
+  {
+    "id": "PRJ002",
+    "title": "Heart Failure Risk Prediction",
+    "status": "Active",
+    "principal_investigator": "Dr James Carter",
+    "organisation": "Cardiology",
+    "datasets": [
+      "DS002"
+    ]
+  },
+  {
+    "id": "PRJ003",
+    "title": "COPD Exacerbation Analytics",
+    "status": "Active",
+    "principal_investigator": "Dr Emily Patel",
+    "organisation": "Respiratory",
+    "datasets": [
+      "DS003"
+    ]
+  },
+  {
+    "id": "PRJ004",
+    "title": "Cancer Outcomes Study",
+    "status": "Completed",
+    "principal_investigator": "Dr David Green",
+    "organisation": "Oncology",
+    "datasets": [
+      "DS004"
+    ]
+  },
+  {
+    "id": "PRJ005",
+    "title": "Stroke Recovery Trajectories",
+    "status": "Active",
+    "principal_investigator": "Dr Aisha Khan",
+    "organisation": "Neurology",
+    "datasets": [
+      "DS005"
+    ]
+  },
+  {
+    "id": "PRJ006",
+    "title": "Emergency Demand Forecasting",
+    "status": "Active",
+    "principal_investigator": "Dr Michael Chen",
+    "organisation": "Operations",
+    "datasets": [
+      "DS006"
+    ]
+  },
+  {
+    "id": "PRJ007",
+    "title": "Mental Health Service Utilisation",
+    "status": "Active",
+    "principal_investigator": "Dr Rachel Adams",
+    "organisation": "Psychiatry",
+    "datasets": [
+      "DS007"
+    ]
+  },
+  {
+    "id": "PRJ008",
+    "title": "Frailty and Falls Prevention",
+    "status": "Completed",
+    "principal_investigator": "Dr Thomas Wright",
+    "organisation": "Geriatrics",
+    "datasets": [
+      "DS008"
+    ]
+  },
+  {
+    "id": "PRJ009",
+    "title": "Maternity Outcomes Programme",
+    "status": "Active",
+    "principal_investigator": "Dr Olivia Bennett",
+    "organisation": "Women's Health",
+    "datasets": [
+      "DS009"
+    ]
+  },
+  {
+    "id": "PRJ010",
+    "title": "Sepsis Early Warning",
+    "status": "Active",
+    "principal_investigator": "Dr Daniel Foster",
+    "organisation": "Critical Care",
+    "datasets": [
+      "DS010"
+    ]
+  },
+  {
+    "id": "PRJ011",
+    "title": "Chronic Kidney Disease Progression",
+    "status": "Active",
+    "principal_investigator": "Dr Priya Nair",
+    "organisation": "Renal",
+    "datasets": [
+      "DS011"
+    ]
+  },
+  {
+    "id": "PRJ012",
+    "title": "Population Health Analytics",
+    "status": "Completed",
+    "principal_investigator": "Dr Robert Hughes",
+    "organisation": "Public Health",
+    "datasets": [
+      "DS012"
+    ]
+  },
+  {
+    "id": "PRJ013",
+    "title": "Elective Waiting List Management",
+    "status": "Active",
+    "principal_investigator": "Dr Laura Simmons",
+    "organisation": "Operations",
+    "datasets": [
+      "DS013"
+    ]
+  },
+  {
+    "id": "PRJ014",
+    "title": "Vaccination Uptake Monitoring",
+    "status": "Active",
+    "principal_investigator": "Dr Kevin Ross",
+    "organisation": "Public Health",
+    "datasets": [
+      "DS014"
+    ]
+  },
+  {
+    "id": "PRJ015",
+    "title": "Health Inequalities Mapping",
+    "status": "Active",
+    "principal_investigator": "Dr Grace Turner",
+    "organisation": "Population Health",
+    "datasets": [
+      "DS015"
+    ]
+  },
+  {
+    "id": "PRJ016",
+    "title": "Long COVID Symptom Tracking",
+    "status": "Completed",
+    "principal_investigator": "Dr Nathan Brooks",
+    "organisation": "Respiratory",
+    "datasets": [
+      "DS016"
+    ]
+  },
+  {
+    "id": "PRJ017",
+    "title": "Asthma Control Research",
+    "status": "Active",
+    "principal_investigator": "Dr Sophie Clarke",
+    "organisation": "Respiratory",
+    "datasets": [
+      "DS017"
+    ]
+  },
+  {
+    "id": "PRJ018",
+    "title": "Medication Safety Incident Analysis",
+    "status": "Active",
+    "principal_investigator": "Dr Andrew Baker",
+    "organisation": "Pharmacy",
+    "datasets": [
+      "DS018"
+    ]
+  },
+  {
+    "id": "PRJ019",
+    "title": "ICU Outcomes Benchmarking",
+    "status": "Active",
+    "principal_investigator": "Dr Chloe Mitchell",
+    "organisation": "Critical Care",
+    "datasets": [
+      "DS019"
+    ]
+  },
+  {
+    "id": "PRJ020",
+    "title": "Remote Patient Monitoring Evaluation",
+    "status": "Completed",
+    "principal_investigator": "Dr Ben Coleman",
+    "organisation": "Digital Health",
+    "datasets": [
+      "DS020"
+    ]
+  }
+]
