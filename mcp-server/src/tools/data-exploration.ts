@@ -9,7 +9,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 import type { UserSession } from "../types.js";
-import { researchDatasets } from "../data.js";
+import { researchDatasets, resolveDatasetId } from "../data.js";
 import {
   getDatasetSchema,
   getDatasetColumns,
@@ -27,9 +27,9 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
 
   server.tool(
     "previewDataset",
-    "View a sample of rows from a research dataset to understand its structure and content. Returns the first N rows with all columns visible (identifier columns are pseudonymised). Use this tool BEFORE writing queries to understand what the data looks like.",
+    "View sample rows from a dataset to understand its structure. Accepts a dataset ID (e.g. 'DS001') or partial name (e.g. 'Diabetes Cohort'). Use this BEFORE writing queries to see what the data looks like. Do NOT use this to list all datasets — use searchDatasets for that.",
     {
-      datasetId: z.string().describe("Dataset ID to preview (e.g., 'ds-001')"),
+      datasetId: z.string().describe("Dataset ID (e.g. 'DS001') or partial name (e.g. 'Diabetes')"),
       limit: z.number().optional().describe("Number of rows to preview (default 5, max 10)"),
     },
     async params => {
@@ -42,8 +42,9 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
         return { content: [{ type: "text", text: `⚠️ Rate Limit Exceeded: ${rateCheck.reason}` }], isError: true };
       }
 
-      // Check dataset exists
-      const metadata = getDatasetMetadata(params.datasetId);
+      // Fuzzy resolution: accepts ID or partial name
+      const resolvedId = resolveDatasetId(params.datasetId);
+      const metadata = getDatasetMetadata(resolvedId ?? params.datasetId);
       if (!metadata) {
         return {
           content: [
@@ -126,9 +127,9 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
 
   server.tool(
     "listColumns",
-    "Get the column definitions for a research dataset including column names, types, descriptions, whether they are identifiers, whether they can be used in GROUP BY, and example values. Essential for understanding what can be queried and how.",
+    "Get column definitions for a dataset including names, types, and descriptions. Accepts dataset ID or partial name. Use this to understand what fields exist BEFORE writing a query. Essential for knowing what can be queried.",
     {
-      datasetId: z.string().describe("Dataset ID (e.g., 'ds-001')"),
+      datasetId: z.string().describe("Dataset ID (e.g. 'DS001') or partial name (e.g. 'Diabetes')"),
       includeStatistics: z
         .boolean()
         .optional()
@@ -144,10 +145,11 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
         return { content: [{ type: "text", text: `⚠️ Rate Limit Exceeded: ${rateCheck.reason}` }], isError: true };
       }
 
-      // Get columns
-      const columns = getDatasetColumns(params.datasetId);
-      const metadata = getDatasetMetadata(params.datasetId);
-      const schema = getDatasetSchema(params.datasetId);
+      // Fuzzy resolution
+      const resolvedId = resolveDatasetId(params.datasetId) ?? params.datasetId;
+      const columns = getDatasetColumns(resolvedId);
+      const metadata = getDatasetMetadata(resolvedId);
+      const schema = getDatasetSchema(resolvedId);
 
       if (!columns || !metadata) {
         return {
@@ -228,9 +230,9 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
 
   server.tool(
     "explainDataset",
-    "Get a comprehensive explanation of a research dataset including its purpose, structure, data quality notes, temporal coverage, governance constraints, and usage guidance. Use this tool to fully understand a dataset before constructing analytical queries.",
+    "Get full metadata and documentation for a dataset including field definitions, record counts, and governance constraints. Accepts dataset ID or partial name. Use this to understand what a dataset contains before running a query.",
     {
-      datasetId: z.string().describe("Dataset ID to explain (e.g., 'ds-001')"),
+      datasetId: z.string().describe("Dataset ID (e.g. 'DS001') or partial name (e.g. 'Stroke Recovery')"),
     },
     async params => {
       const session = getSession();
@@ -242,8 +244,9 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
         return { content: [{ type: "text", text: `⚠️ Rate Limit Exceeded: ${rateCheck.reason}` }], isError: true };
       }
 
-      // Check access
-      const metadata = getDatasetMetadata(params.datasetId);
+      // Fuzzy resolution
+      const resolvedId = resolveDatasetId(params.datasetId) ?? params.datasetId;
+      const metadata = getDatasetMetadata(resolvedId);
       if (!metadata) {
         return {
           content: [
@@ -297,10 +300,10 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
 
   server.tool(
     "validateQuery",
-    "Pre-validate a natural language query (and optionally its SQL translation) against governance rules and dataset schema BEFORE submitting it. Returns detailed feedback on issues, warnings, and suggestions to help construct a valid, safe query. Always use this tool before submitQuery to catch problems early.",
+    "Pre-validate a query against governance rules BEFORE submitting with submitQuery. Checks for PII patterns, prohibited operations, and column validity. Always call this first — if validation fails, do NOT proceed to submitQuery. Accepts dataset ID or partial name.",
     {
       query: z.string().describe("The natural language analytical question to validate"),
-      datasetId: z.string().describe("Target dataset ID (e.g., 'ds-001')"),
+      datasetId: z.string().describe("Dataset ID (e.g. 'DS001') or partial name (e.g. 'Diabetes')"),
       translatedSQL: z
         .string()
         .optional()
@@ -312,8 +315,9 @@ export function registerDataExplorationTools(server: McpServer, getSession: () =
       // This tool doesn't count against rate limit (it's a pre-flight check)
       // but we still audit it
 
-      // Check dataset exists
-      const metadata = getDatasetMetadata(params.datasetId);
+      // Fuzzy resolution
+      const resolvedId = resolveDatasetId(params.datasetId) ?? params.datasetId;
+      const metadata = getDatasetMetadata(resolvedId);
       if (!metadata) {
         return {
           content: [
