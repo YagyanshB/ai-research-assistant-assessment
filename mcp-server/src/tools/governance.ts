@@ -3,12 +3,15 @@
 //   - getAuditTrail:           View the audit log
 //   - getRateLimit:            Check rate limit status
 //   - listGovernancePolicies:  List all active governance policies
+//   - listResearchers:         Discover registered researchers
+//   - getResearcher:           Look up a specific researcher
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 import type { UserSession } from "../types.js";
 import { getRateLimitStatus, createAuditEntry, getAuditLog, getGovernancePolicies } from "../governance.js";
+import { researchers } from "../data.js";
 
 // ─── Register Governance Tools ──────────────────────────────────────────────
 
@@ -117,6 +120,66 @@ export function registerGovernanceTools(server: McpServer, getSession: () => Use
               `   ${p.description}`,
           )
           .join("\n\n");
+
+      return { content: [{ type: "text", text }] };
+    },
+  );
+
+  // ─── Tool: List Researchers ───────────────────────────────────────────────
+
+  server.tool(
+    "listResearchers",
+    "Discover registered researchers on the platform. Optionally filter by role (case-insensitive substring match, e.g. 'Data Scientist', 'Administrator'). Use this to answer questions like 'who has access to project X?' or 'which researchers are Data Scientists?'. Do NOT use this for dataset or project lookups — use searchProjects or searchDatasets instead.",
+    {
+      role: z
+        .string()
+        .optional()
+        .describe("Filter by role (case-insensitive substring, e.g. 'Data Scientist', 'Clinical Research Fellow')"),
+    },
+    async params => {
+      let results = [...researchers];
+
+      if (params.role) {
+        const roleLower = params.role.toLowerCase();
+        results = results.filter(r => r.role.toLowerCase().includes(roleLower));
+      }
+
+      const text =
+        results.length > 0
+          ? `Found ${results.length} researcher(s):\n\n` +
+            results
+              .map(
+                r =>
+                  `**${r.display_name}** (@${r.username})\n` +
+                  `   Role: ${r.role}\n` +
+                  `   Projects: ${r.projects.includes("*") ? "All (Administrator)" : r.projects.join(", ")}`,
+              )
+              .join("\n\n")
+          : "No researchers found matching your criteria.";
+
+      return { content: [{ type: "text", text }] };
+    },
+  );
+
+  // ─── Tool: Get Researcher ─────────────────────────────────────────────────
+
+  server.tool(
+    "getResearcher",
+    "Retrieve full details for a single researcher by their username (e.g. 'alice', 'diana', 'admin'). Returns their display name, role, and assigned projects. Use this to check what a specific researcher has access to.",
+    {
+      username: z.string().describe("Researcher username (e.g. 'alice', 'diana', 'bob')"),
+    },
+    async params => {
+      const researcher = researchers.find(r => r.username.toLowerCase() === params.username.toLowerCase());
+
+      if (!researcher) {
+        return { content: [{ type: "text", text: `Researcher '${params.username}' not found.` }] };
+      }
+
+      const text =
+        `**${researcher.display_name}** (@${researcher.username})\n` +
+        `Role: ${researcher.role}\n` +
+        `Projects: ${researcher.projects.includes("*") ? "All projects (Platform Administrator)" : researcher.projects.join(", ")}`;
 
       return { content: [{ type: "text", text }] };
     },
