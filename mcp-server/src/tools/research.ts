@@ -10,7 +10,15 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 import type { UserSession } from "../types.js";
-import { researchProjects, researchDatasets, analyticalQueries } from "../data.js";
+import {
+  researchProjects,
+  researchDatasets,
+  analyticalQueries,
+  sampleQueryResults,
+  resolveDatasetId,
+  resolveProjectId,
+  researchers,
+} from "../data.js";
 import {
   checkRateLimit,
   checkAccessControl,
@@ -20,7 +28,6 @@ import {
   createAuditEntry,
   applySmallNumberSuppression,
 } from "../governance.js";
-import { sampleQueryResults } from "../data.js";
 
 // ─── Helper: Simulate SQL Translation ───────────────────────────────────────
 
@@ -53,7 +60,7 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
 
   server.tool(
     "searchProjects",
-    "Search approved research projects by domain, status, investigator, or keyword. Returns projects the user has access to based on their tier.",
+    "Discover NHS research projects. Filter by status ('Active'/'Completed'), domain/organisation (case-insensitive), or keyword (matches title and description). Use this to answer 'what projects exist?' or 'which projects are active?'. For details on a single project, use getProjectDetails instead.",
     {
       query: z.string().optional().describe("Search term to filter projects (matches title, description, domain, PI)"),
       status: z.enum(["Active", "Completed", "Suspended"]).optional().describe("Filter by project status"),
@@ -123,7 +130,7 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
 
   server.tool(
     "searchDatasets",
-    "Explore available research datasets. Returns dataset metadata including classification level, record counts, and ownership. Enforces data classification access controls.",
+    "Search and filter available research datasets. Use this (not submitQuery) to answer questions like 'which datasets are available?', 'which datasets are restricted?', or 'what data do we have for diabetes?'. Returns metadata including classification, record counts, and ownership.",
     {
       query: z.string().optional().describe("Search term to filter datasets (matches name, description, category)"),
       classification: z
@@ -195,16 +202,18 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
 
   server.tool(
     "getProjectDetails",
-    "Get complete details for a specific research project, including associated datasets and query history.",
+    "Retrieve full details for a single research project by its ID (e.g. 'PRJ001') or partial title (e.g. 'Diabetes', 'Heart Failure'). Always call this to check whether a specific project exists. If it returns not found, the project does not exist — do not fall back to searchProjects.",
     {
-      projectId: z.string().describe("The project ID (e.g., 'proj-001')"),
+      projectId: z.string().describe("Project ID (e.g. 'PRJ001') or partial title (e.g. 'Diabetes')"),
     },
     async params => {
       const session = getSession();
 
-      const project = researchProjects.find(p => p.projectId === params.projectId);
+      // Fuzzy resolution: accepts ID or partial name
+      const resolvedId = resolveProjectId(params.projectId);
+      const project = resolvedId ? researchProjects.find(p => p.projectId === resolvedId) : null;
       if (!project) {
-        return { content: [{ type: "text", text: `❌ Project not found: ${params.projectId}` }], isError: true };
+        return { content: [{ type: "text", text: `Project '${params.projectId}' not found.` }], isError: true };
       }
 
       const accessCheck = checkAccessControl(session, project.accessTier);
@@ -263,11 +272,11 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
 
   server.tool(
     "submitQuery",
-    "Submit a natural language analytical query against a research dataset. The query is validated against governance rules, translated to SQL, and either executed immediately or queued for approval. IMPORTANT: Use 'validateQuery' tool first to check your query before submitting.",
+    "Execute an analytical query against a research dataset. Accepts a dataset ID (e.g. 'DS001') or partial name (e.g. 'Diabetes Cohort'). Returns sample results or a governance suppression notice. IMPORTANT: Always call validateQuery first. Restricted datasets require authorised access. Do NOT use this to answer 'which datasets exist?' — use searchDatasets for that.",
     {
       query: z.string().describe("Natural language analytical question"),
-      datasetId: z.string().describe("Target dataset ID (e.g., 'ds-001')"),
-      projectId: z.string().describe("Associated project ID (e.g., 'proj-001')"),
+      datasetId: z.string().describe("Dataset ID (e.g. 'DS001') or partial name (e.g. 'Diabetes Cohort')"),
+      projectId: z.string().describe("Project ID (e.g. 'PRJ001') or partial title (e.g. 'Diabetes')"),
     },
     async params => {
       const session = getSession();
@@ -302,9 +311,11 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
         };
       }
 
-      const dataset = researchDatasets.find(d => d.datasetId === params.datasetId);
+      // Fuzzy resolution for dataset and project
+      const resolvedDatasetId = resolveDatasetId(params.datasetId);
+      const dataset = resolvedDatasetId ? researchDatasets.find(d => d.datasetId === resolvedDatasetId) : null;
       if (!dataset)
-        return { content: [{ type: "text", text: `❌ Dataset not found: ${params.datasetId}` }], isError: true };
+        return { content: [{ type: "text", text: `Dataset '${params.datasetId}' not found.` }], isError: true };
 
       const classCheck = checkClassification(session, dataset.classificationLevel);
       if (!classCheck.allowed) {
@@ -319,13 +330,44 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
         return { content: [{ type: "text", text: `🔒 **Access Denied**\n\n${classCheck.reason}` }] };
       }
 
-      const project = researchProjects.find(p => p.projectId === params.projectId);
+      const resolvedProjectId = resolveProjectId(params.projectId);
+      const project = resolvedProjectId ? researchProjects.find(p => p.projectId === resolvedProjectId) : null;
       if (!project)
-        return { content: [{ type: "text", text: `❌ Project not found: ${params.projectId}` }], isError: true };
+        return { content: [{ type: "text", text: `Project '${params.projectId}' not found.` }], isError: true };
 
       const accessCheck = checkAccessControl(session, project.accessTier);
       if (!accessCheck.allowed)
         return { content: [{ type: "text", text: `🔒 **Access Denied**\n\n${accessCheck.reason}` }] };
+
+      // ─── Restricted Dataset Authorization ─────────────────────────────
+      // For restricted datasets, verify the current user is assigned to a project that uses this dataset
+      if (dataset.classificationLevel === "Official - Sensitive") {
+        const currentResearcher = researchers.find(r => r.username === session.userId);
+        if (currentResearcher && !currentResearcher.projects.includes("*")) {
+          const hasProjectAccess = currentResearcher.projects.includes(project.projectId);
+          if (!hasProjectAccess) {
+            createAuditEntry(
+              session.userId,
+              "submitQuery",
+              "Submit Query",
+              "Rejected",
+              `Researcher '${session.userId}' not authorised for restricted dataset '${dataset.datasetId}' via project '${project.projectId}'`,
+              { resourceType: "Dataset", resourceId: dataset.datasetId, projectId: project.projectId },
+            );
+            return {
+              content: [
+                {
+                  type: "text",
+                  text:
+                    `🔒 **Access Denied**\n\nDataset '${dataset.name}' is restricted. ` +
+                    `Researcher '${session.userId}' is not assigned to project '${project.title}'. ` +
+                    `Only researchers assigned to the project can query its restricted datasets.`,
+                },
+              ],
+            };
+          }
+        }
+      }
 
       // Check for pre-computed results
       const existingQuery = analyticalQueries.find(
@@ -337,7 +379,7 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
       if (existingQuery && existingQuery.status === "Approved") {
         // ─── GOV-005: Small-Number Suppression Check ────────────────────
         // Check if the sample results for this dataset have groups below threshold
-        const sampleData = sampleQueryResults[params.datasetId];
+        const sampleData = sampleQueryResults[dataset.datasetId];
         const suppressionCheck = applySmallNumberSuppression(sampleData?.count ?? 0);
 
         if (suppressionCheck.suppressed) {
@@ -414,7 +456,7 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
       const simulatedSQL = generateSimulatedSQL(params.query, dataset);
 
       // ─── GOV-005: Small-Number Suppression Check ──────────────────────
-      const sampleData = sampleQueryResults[params.datasetId];
+      const sampleData = sampleQueryResults[dataset.datasetId];
       const suppressionCheck = applySmallNumberSuppression(sampleData?.count ?? dataset.recordCount);
 
       if (suppressionCheck.suppressed) {
@@ -474,7 +516,7 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
     "getQueryStatus",
     "Check the status of a previously submitted analytical query by its ID.",
     {
-      queryId: z.string().describe("The query ID to check (e.g., 'q-004')"),
+      queryId: z.string().describe("The query ID to check (e.g., 'q-001')"),
     },
     async params => {
       const session = getSession();
