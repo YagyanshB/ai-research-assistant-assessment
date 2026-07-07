@@ -229,8 +229,8 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
         return { content: [{ type: "text", text: `🔒 **Access Denied**\n\n${accessCheck.reason}` }] };
       }
 
-      const datasets = researchDatasets.filter(d => d.projectId === params.projectId);
-      const queries = analyticalQueries.filter(q => q.projectId === params.projectId);
+      const datasets = researchDatasets.filter(d => d.projectId === project.projectId);
+      const queries = analyticalQueries.filter(q => q.projectId === project.projectId);
 
       createAuditEntry(
         session.userId,
@@ -238,7 +238,7 @@ export function registerResearchTools(server: McpServer, getSession: () => UserS
         "View Project Details",
         "Success",
         `Viewed: ${project.title}`,
-        { resourceType: "ResearchProject", resourceId: params.projectId, projectId: params.projectId },
+        { resourceType: "ResearchProject", resourceId: project.projectId, projectId: project.projectId },
       );
 
       const text =
