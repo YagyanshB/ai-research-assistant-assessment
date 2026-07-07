@@ -49,11 +49,33 @@ export interface GovernanceCheck {
   details?: string;
 }
 
+export interface GroundingResult {
+  /** Whether the answer is fully grounded in tool outputs */
+  grounded: boolean;
+  /** Claims in the answer that could not be verified against tool results */
+  unverified_claims: string[];
+  /** Data points in tool results that the answer correctly references */
+  verified_references: string[];
+}
+
+export interface ResearcherContext {
+  researcher_id: string;
+  display_name: string;
+  role: string;
+  projects: string[];
+}
+
 export interface AgentResponse {
   answer: string;
   toolsInvoked: ToolInvocation[];
   reasoning: string;
   totalIterations: number;
+  /** Sources extracted from tool results (dataset/project IDs) */
+  sources: string[];
+  /** Answer grounding verification */
+  grounding: GroundingResult;
+  /** Researcher context if provided */
+  researcher?: ResearcherContext;
   /** Detailed observability telemetry */
   observability: {
     /** Total wall-clock time for the entire request */
@@ -101,27 +123,124 @@ function estimateCost(model: string, promptTokens: number, completionTokens: num
   return promptTokens * costs.input + completionTokens * costs.output;
 }
 
+// ─── Answer Grounding ───────────────────────────────────────────────────────
+// Verifies that the LLM's answer is supported by actual tool results.
+// Prevents hallucination by cross-referencing claims against evidence.
+
+function groundAnswer(answer: string, toolResults: ToolInvocation[]): GroundingResult {
+  const allToolText = toolResults
+    .map(t => t.result)
+    .join("\n")
+    .toLowerCase();
+  const verifiedRefs: string[] = [];
+  const unverifiedClaims: string[] = [];
+
+  // Extract numeric claims from the answer (e.g., "45,405 records", "18%")
+  const numericClaims = answer.match(/\d[\d,.]+(?: records| patients| %| percent| months| weeks| days)?/g) ?? [];
+  for (const claim of numericClaims) {
+    const cleanNum = claim
+      .replace(/[,\s]/g, "")
+      .replace(/(records|patients|percent|months|weeks|days|%)/g, "")
+      .trim();
+    if (allToolText.includes(cleanNum) || allToolText.includes(claim.toLowerCase())) {
+      verifiedRefs.push(claim);
+    } else if (cleanNum.length > 1) {
+      // Only flag as unverified if it's a meaningful number (not single digits)
+      unverifiedClaims.push(claim);
+    }
+  }
+
+  // Extract dataset/project ID references from the answer
+  const idRefs = answer.match(/(?:DS|PRJ)\d{3}/g) ?? [];
+  for (const id of idRefs) {
+    if (allToolText.includes(id.toLowerCase())) {
+      verifiedRefs.push(id);
+    } else {
+      unverifiedClaims.push(`Reference to ${id} not found in tool results`);
+    }
+  }
+
+  // Extract quoted names/titles and verify against tool outputs
+  const quotedNames = answer.match(/"([^"]+)"|'([^']+)'|"([^"]+)"/g) ?? [];
+  for (const name of quotedNames) {
+    const clean = name.replace(/[""'"']/g, "").toLowerCase();
+    if (clean.length > 3 && allToolText.includes(clean)) {
+      verifiedRefs.push(name);
+    }
+  }
+
+  // Grounded = no significant unverified claims
+  const grounded = unverifiedClaims.length === 0;
+
+  return { grounded, unverified_claims: unverifiedClaims, verified_references: verifiedRefs };
+}
+
+// ─── Source Extraction from Tool Results ────────────────────────────────────
+// Extracts dataset/project IDs from actual tool output text (not just args).
+
+function extractSourcesFromResults(toolResults: ToolInvocation[]): string[] {
+  const sources = new Set<string>();
+
+  for (const inv of toolResults) {
+    // From args
+    if (inv.args.datasetId) sources.add(inv.args.datasetId as string);
+    if (inv.args.projectId) sources.add(inv.args.projectId as string);
+
+    // From result text — more reliable for discovery tools
+    const dsMatches = inv.result.match(/DS\d{3}/g);
+    if (dsMatches) for (const m of dsMatches) sources.add(m);
+
+    const prjMatches = inv.result.match(/PRJ\d{3}/g);
+    if (prjMatches) for (const m of prjMatches) sources.add(m);
+  }
+
+  return Array.from(sources).sort();
+}
+
+// ─── Researcher Identity ────────────────────────────────────────────────────
+// Builds a personalised system prompt addition when researcher context is provided.
+
+function buildResearcherPrompt(researcher: ResearcherContext): string {
+  const projectList = researcher.projects.includes("*")
+    ? "all projects (administrator)"
+    : researcher.projects.join(", ");
+
+  return (
+    `\n\nRESEARCHER CONTEXT:\n` +
+    `The authenticated researcher making this request is "${researcher.display_name}" ` +
+    `(username: ${researcher.researcher_id}, role: ${researcher.role}).\n` +
+    `They have access to projects: ${projectList}.\n` +
+    `When calling tools that accept parameters, use their context to provide ` +
+    `personalised responses. For example, mention which of THEIR projects are ` +
+    `relevant to their question.`
+  );
+}
+
 // ─── System Prompt ──────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are an AI Research Assistant for the NHS Regional Research and Analytics Platform.
+const SYSTEM_PROMPT = `You are an AI Research Assistant for an NHS Regional Research and Analytics Platform.
 
-Your role is to help researchers:
-- Discover approved research projects
-- Explore available datasets and their schemas
-- Perform approved analytical queries against synthetic research data
+Your role is to help researchers discover projects, explore datasets, and retrieve analytical results using MCP tools.
 
-IMPORTANT GUIDELINES:
-1. You interact with data ONLY through MCP tools. Never fabricate data.
-2. Follow the recommended workflow for analytical queries:
-   - First use searchDatasets or explainDataset to understand available data
-   - Use listColumns to know what fields exist before querying
-   - Use validateQuery to check a query is safe BEFORE submitting
-   - Only then use submitQuery to execute
-3. Always cite which tools provided your information (traceability).
-4. If a query is rejected by governance, explain WHY clearly and suggest alternatives.
-5. Keep responses concise and evidence-based.
-6. If you're unsure which dataset to use, ask the researcher to clarify.
-7. For restricted/sensitive datasets, inform the researcher about access requirements.
+GROUNDING RULES:
+- Every fact in your answer MUST come from a tool result. Never answer from general or medical knowledge.
+- If no tool can answer the question, say so plainly instead of guessing.
+- If a tool returns an error or empty result for a specific ID/name, relay that plainly in one sentence. Do NOT retry with a different or broader tool call, and do NOT fall back to your own knowledge.
+
+OUTPUT FORMAT:
+- Respond in plain text only. No markdown formatting (no headers, bullet points, bold/italics, or code blocks).
+- Do NOT repeat dataset or project IDs (e.g. DS001, PRJ001) in your prose — they are returned separately in the sources field. Refer to items by their name/title instead.
+- Answer as briefly as possible: a single short sentence for simple lookups. Only include extra detail (fields, record counts, descriptions) if the researcher specifically asks for it.
+
+GOVERNANCE:
+- If a governance suppression notice is returned (e.g. fewer than 5 records), state in one short sentence that results were suppressed and why. Do not suggest how to proceed unless the researcher asks.
+- For restricted/sensitive datasets, inform the researcher about access requirements.
+
+WORKFLOW FOR ANALYTICAL QUERIES:
+1. Use searchDatasets or explainDataset to understand available data
+2. Use listColumns to know what fields exist before querying
+3. Use validateQuery to check a query is safe BEFORE submitting
+4. Only then use submitQuery to execute
 
 AVAILABLE TOOL CATEGORIES:
 - Research Discovery: searchProjects, searchDatasets, getProjectDetails
@@ -129,8 +248,7 @@ AVAILABLE TOOL CATEGORIES:
 - Query Execution: validateQuery, submitQuery, getQueryStatus
 - Governance: getAuditTrail, getRateLimit, listGovernancePolicies
 
-Always determine the optimal order of tool calls to efficiently answer the question.
-Combine tool results into a single, coherent response.`;
+Determine the optimal order of tool calls to efficiently answer the question. Combine tool results into a single, coherent response.`;
 
 // ─── Agent Class ────────────────────────────────────────────────────────────
 
@@ -172,9 +290,10 @@ export class ResearchAgent {
 
   /**
    * Process a researcher's question through the agent loop.
+   * Optionally accepts researcher context for personalised responses.
    * Returns a structured response with full observability telemetry.
    */
-  async ask(question: string): Promise<AgentResponse> {
+  async ask(question: string, researcher?: ResearcherContext): Promise<AgentResponse> {
     const requestStart = Date.now();
     const toolInvocations: ToolInvocation[] = [];
     const llmCalls: LLMCall[] = [];
@@ -187,13 +306,25 @@ export class ResearchAgent {
     let llmThinkingMs = 0;
     let toolExecutionMs = 0;
 
+    // Build system prompt with optional researcher identity
+    let systemPrompt = SYSTEM_PROMPT;
+    if (researcher) {
+      systemPrompt += buildResearcherPrompt(researcher);
+      decisionChain.push(
+        `Researcher identified: ${researcher.display_name} (${researcher.role}), projects: ${researcher.projects.join(", ")}`,
+      );
+    }
+
     // Build conversation messages
     const messages: ChatCompletionMessageParam[] = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
       { role: "user", content: question },
     ];
 
-    this.log("info", `\nProcessing question: "${question}"`);
+    this.log(
+      "info",
+      `\nProcessing question: "${question}"${researcher ? ` [researcher: ${researcher.researcher_id}]` : ""}`,
+    );
     decisionChain.push(`Received question: "${question.slice(0, 100)}${question.length > 100 ? "..." : ""}"`);
 
     // ─── Agent Loop (ReAct pattern) ───────────────────────────────────────
@@ -378,11 +509,27 @@ export class ResearchAgent {
           details: "Within daily quota",
         });
 
+        const finalAnswer = assistantMessage.content ?? "I was unable to generate a response.";
+
+        // ─── Answer Grounding: verify LLM output against tool results ──
+        const grounding = groundAnswer(finalAnswer, toolInvocations);
+        if (!grounding.grounded) {
+          decisionChain.push(`⚠️ Grounding check: ${grounding.unverified_claims.length} unverified claim(s) detected`);
+        } else {
+          decisionChain.push(`✓ Grounding check passed: answer fully supported by tool results`);
+        }
+
+        // ─── Source Extraction from tool outputs ──────────────────────
+        const sources = extractSourcesFromResults(toolInvocations);
+
         return {
-          answer: assistantMessage.content ?? "I was unable to generate a response.",
+          answer: finalAnswer,
           toolsInvoked: toolInvocations,
           reasoning: this.buildReasoning(toolInvocations),
           totalIterations: iterations,
+          sources,
+          grounding,
+          researcher,
           observability: {
             total_duration_ms: totalDuration,
             timing: {
@@ -428,12 +575,19 @@ export class ResearchAgent {
     totalCompletionTokens += finalUsage?.completion_tokens ?? 0;
 
     const totalDuration = Date.now() - requestStart;
+    const fallbackAnswer =
+      finalCompletion.choices[0].message.content ?? "Unable to complete analysis within iteration limit.";
+    const grounding = groundAnswer(fallbackAnswer, toolInvocations);
+    const sources = extractSourcesFromResults(toolInvocations);
 
     return {
-      answer: finalCompletion.choices[0].message.content ?? "Unable to complete analysis within iteration limit.",
+      answer: fallbackAnswer,
       toolsInvoked: toolInvocations,
       reasoning: this.buildReasoning(toolInvocations),
       totalIterations: iterations,
+      sources,
+      grounding,
+      researcher,
       observability: {
         total_duration_ms: totalDuration,
         timing: {
