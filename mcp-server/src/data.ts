@@ -24,11 +24,11 @@ interface RawDataset {
 
 interface RawProject {
   id: string;
-  name: string;
-  lead: string;
+  title: string;
   status: string;
-  dataset: string;
-  description: string;
+  principal_investigator: string;
+  organisation: string;
+  datasets: string[];
 }
 
 export interface Researcher {
@@ -54,16 +54,16 @@ export const sampleQueryResults: Record<string, SampleQueryResult> = JSON.parse(
 
 export const researchProjects: ResearchProject[] = rawProjects.map(p => ({
   projectId: p.id,
-  title: p.name,
-  description: p.description,
-  principalInvestigator: p.lead,
-  status: p.status === "active" ? ("Active" as const) : ("Completed" as const),
+  title: p.title,
+  description: `${p.title} — led by ${p.organisation} department.`,
+  principalInvestigator: p.principal_investigator,
+  status: p.status === "Active" ? ("Active" as const) : ("Completed" as const),
   approvalDate: "2024-01-15",
   expiryDate: "2026-01-14",
   ethicsReference: `IRAS-2024-${p.id.replace("PRJ", "").padStart(6, "0")}`,
   fundingBody: "NHS England",
-  researchDomain: getDomainForProject(p.id),
-  accessTier: getAccessTierForDataset(p.dataset),
+  researchDomain: p.organisation,
+  accessTier: getAccessTierForDataset(p.datasets[0]),
 }));
 
 export const researchDatasets: ResearchDataset[] = rawDatasets.map(d => ({
@@ -298,4 +298,54 @@ function getCategoryForDataset(datasetId: string): string {
     DS020: "Digital Health",
   };
   return categories[datasetId] ?? "General";
+}
+
+// ─── Fuzzy ID / Name Resolution ─────────────────────────────────────────────
+// Allows tools to accept both exact IDs (e.g. "DS005") and partial/full names
+// (e.g. "Stroke Recovery"). Returns the resolved ID or null if not found.
+
+/**
+ * Resolve a dataset by ID or partial name match.
+ * Accepts: "DS001", "ds001", "Primary Care Diabetes", "diabetes", etc.
+ */
+export function resolveDatasetId(input: string): string | null {
+  if (!input) return null;
+  const normalized = input.trim();
+
+  // Exact ID match (case-insensitive)
+  const exactMatch = researchDatasets.find(d => d.datasetId.toLowerCase() === normalized.toLowerCase());
+  if (exactMatch) return exactMatch.datasetId;
+
+  // Exact name match (case-insensitive)
+  const nameMatch = researchDatasets.find(d => d.name.toLowerCase() === normalized.toLowerCase());
+  if (nameMatch) return nameMatch.datasetId;
+
+  // Partial name match (substring, case-insensitive)
+  const partialMatch = researchDatasets.find(d => d.name.toLowerCase().includes(normalized.toLowerCase()));
+  if (partialMatch) return partialMatch.datasetId;
+
+  return null;
+}
+
+/**
+ * Resolve a project by ID or partial title match.
+ * Accepts: "PRJ001", "prj001", "Early Detection of Type 2 Diabetes", "diabetes", etc.
+ */
+export function resolveProjectId(input: string): string | null {
+  if (!input) return null;
+  const normalized = input.trim();
+
+  // Exact ID match (case-insensitive)
+  const exactMatch = researchProjects.find(p => p.projectId.toLowerCase() === normalized.toLowerCase());
+  if (exactMatch) return exactMatch.projectId;
+
+  // Exact title match (case-insensitive)
+  const titleMatch = researchProjects.find(p => p.title.toLowerCase() === normalized.toLowerCase());
+  if (titleMatch) return titleMatch.projectId;
+
+  // Partial title match (substring, case-insensitive)
+  const partialMatch = researchProjects.find(p => p.title.toLowerCase().includes(normalized.toLowerCase()));
+  if (partialMatch) return partialMatch.projectId;
+
+  return null;
 }
