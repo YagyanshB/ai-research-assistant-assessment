@@ -19,7 +19,41 @@
 import express from "express";
 import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
-import { ResearchAgent, type AgentResponse } from "./agent.js";
+import { ResearchAgent, type AgentResponse, type ResearcherContext } from "./agent.js";
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// ─── Load Researchers for Identity Injection ────────────────────────────────
+
+interface RawResearcher {
+  username: string;
+  display_name: string;
+  role: string;
+  projects: string[];
+}
+
+let researchers: RawResearcher[] = [];
+try {
+  const researchersPath = resolve(__dirname, "../../mcp-server/data/researchers.json");
+  researchers = JSON.parse(readFileSync(researchersPath, "utf-8"));
+} catch {
+  // Researchers file not found - identity injection disabled
+}
+
+function lookupResearcher(researcherId: string): ResearcherContext | undefined {
+  const r = researchers.find(r => r.username === researcherId);
+  if (!r) return undefined;
+  return {
+    researcher_id: r.username,
+    display_name: r.display_name,
+    role: r.role,
+    projects: r.projects,
+  };
+}
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
@@ -90,35 +124,19 @@ function storeAudit(record: AuditRecord): void {
   }
 }
 
-// ─── Extract Sources from Agent Response ────────────────────────────────────
-
-function extractSources(response: AgentResponse): string[] {
-  const sources = new Set<string>();
-
-  for (const invocation of response.toolsInvoked) {
-    if (invocation.args.datasetId) sources.add(invocation.args.datasetId as string);
-    if (invocation.args.projectId) sources.add(invocation.args.projectId as string);
-
-    const dsMatches = invocation.result.match(/DS\d{3}/g);
-    if (dsMatches) for (const m of dsMatches) sources.add(m);
-
-    const prjMatches = invocation.result.match(/PRJ\d{3}/g);
-    if (prjMatches) for (const m of prjMatches) sources.add(m);
-  }
-
-  return Array.from(sources).sort();
-}
+// Source extraction is now built into the agent (extractSourcesFromResults)
+// The API uses response.sources directly from the agent's output.
 
 // ─── POST /query ────────────────────────────────────────────────────────────
 
 app.post("/query", async (req, res) => {
-  const { question } = req.body;
+  const { question, researcher_id } = req.body;
 
   if (!question || typeof question !== "string" || question.trim().length === 0) {
     res.status(400).json({
       error: "Bad Request",
       message: "Request body must include a non-empty 'question' field.",
-      example: { question: "Which datasets are available for diabetes research?" },
+      example: { question: "Which datasets are available for diabetes research?", researcher_id: "diana" },
     });
     return;
   }
@@ -131,19 +149,24 @@ app.post("/query", async (req, res) => {
     return;
   }
 
+  // Resolve researcher identity (optional)
+  const researcher = researcher_id ? lookupResearcher(researcher_id) : undefined;
+
   const traceId = uuidv4().replace(/-/g, "").slice(0, 8);
   const requestTime = new Date().toISOString();
   requestCount++;
 
-  console.log(`[${requestTime}] POST /query | trace_id=${traceId} | #${requestCount} | "${question.slice(0, 80)}"`);
+  console.log(
+    `[${requestTime}] POST /query | trace_id=${traceId} | #${requestCount} | researcher=${researcher_id ?? "anonymous"} | "${question.slice(0, 80)}"`,
+  );
 
   try {
-    // Delegate reasoning to the AI Research Agent
-    const response = await agent.ask(question.trim());
+    // Delegate reasoning to the AI Research Agent (with optional researcher context)
+    const response = await agent.ask(question.trim(), researcher);
     const responseTime = new Date().toISOString();
 
-    // Extract sources from tool invocations
-    const sources = extractSources(response);
+    // Use agent's built-in source extraction (from tool results, not just args)
+    const sources = response.sources;
 
     // Build the audit record
     const auditRecord: AuditRecord = {
@@ -180,6 +203,15 @@ app.post("/query", async (req, res) => {
       answer: response.answer,
       sources,
       trace_id: traceId,
+      grounding: response.grounding,
+      researcher: response.researcher
+        ? {
+            id: response.researcher.researcher_id,
+            name: response.researcher.display_name,
+            role: response.researcher.role,
+            projects: response.researcher.projects,
+          }
+        : undefined,
       observability: {
         request_id: traceId,
         timestamp: requestTime,
