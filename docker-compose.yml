@@ -1,0 +1,29 @@
+# ─── NHS Research Platform - Docker Compose ──────────────────────────────────
+# Run: docker compose up
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+  agent:
+    build: .
+    container_name: nhs-research-agent
+    ports:
+      - "3002:3002"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      - API_PORT=3002
+      - MAX_ITERATIONS=10
+      - LOG_LEVEL=info
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3002/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+    restart: unless-stopped
